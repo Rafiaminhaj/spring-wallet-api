@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartWallet - Secured Ledger Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --accent-green: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.15);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --danger-red: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 40%);
+        }
+
+        header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: rgba(11, 15, 25, 0.8);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo i {
+            -webkit-text-fill-color: var(--accent-green);
+        }
+
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-green);
+            color: #ffffff;
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+        }
+
+        main {
+            flex: 1;
+            padding: 2.5rem 2rem;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Auth Screen layout */
+        .auth-container {
+            max-width: 450px;
+            margin: 4rem auto;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .auth-toggle {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            color: var(--accent-green);
+            border-bottom-color: var(--accent-green);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-green);
+        }
+
+        /* Dashboard layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 968px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .balance-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .balance-value {
+            font-size: 3rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            color: #ffffff;
+            margin: 1rem 0;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
+        }
+
+        .wallet-info {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .wallet-info strong {
+            color: var(--text-main);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        .section-title i {
+            color: var(--accent-green);
+        }
+
+        /* Ledger History styling */
+        .ledger-card {
+            grid-column: 1 / -1;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 1rem;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .tx-amount {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+
+        .tx-received {
+            color: var(--accent-green);
+        }
+
+        .tx-sent {
+            color: var(--danger-red);
+        }
+
+        .badge {
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+        }
+
+        .badge-danger {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: var(--danger-red);
+        }
+
+        /* Toasts notification system */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .toast {
+            background: #1e293b;
+            border-left: 4px solid var(--accent-green);
+            color: var(--text-main);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-error {
+            border-left-color: var(--danger-red);
+        }
+
+        /* Utility visibility classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .loader {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid var(--accent-green);
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-wallet"></i> SmartWallet Console
+        </div>
+        <div class="user-status">
+            <span id="header-user-display" class="hidden">
+                <i class="fa-regular fa-user"></i> Welcome, <strong id="current-user-name"></strong>
+            </span>
+            <button id="logout-btn" class="btn btn-secondary btn-danger hidden" onclick="logout()">
+                <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- AUTH CONTAINER -->
+        <div id="auth-panel" class="auth-container">
+            <div class="auth-toggle">
+                <div id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">Login</div>
+                <div id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">Register</div>
+            </div>
+            
+            <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="form-control" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Enter password" required>
+                </div>
+                <button type="submit" id="auth-submit-btn" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    Sign In
+                </button>
+            </form>
+        </div>
+
+        <!-- DASHBOARD CONTAINER -->
+        <div id="dashboard-panel" class="dashboard-grid hidden">
+            <!-- Balance Panel -->
+            <div class="card balance-card">
+                <div>
+                    <div class="balance-title">Available Ledger Balance</div>
+                    <div id="balance-display" class="balance-value">$0.00</div>
+                </div>
+                <div class="wallet-info">
+                    <div>Wallet Ref: <strong id="wallet-id-display">#0</strong></div>
+                    <div>Security State: <strong style="color: var(--accent-green);"><i class="fa-solid fa-shield"></i> JWT Encrypted</strong></div>
+                </div>
+            </div>
+
+            <!-- Transfer Panel -->
+            <div class="card">
+                <h3 class="section-title"><i class="fa-solid fa-paper-plane"></i> Instantly Transfer Money</h3>
+                <form id="transfer-form" onsubmit="handleTransferSubmit(event)">
+                    <div class="form-group">
+                        <label for="targetUsername">Target Username</label>
+                        <input type="text" id="targetUsername" class="form-control" placeholder="Recipient's username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="transferAmount">Amount ($)</label>
+                        <input type="number" id="transferAmount" class="form-control" step="0.01" min="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="text" id="description" class="form-control" placeholder="E.g. Food, rent, project bill">
+                    </div>
+                    <button type="submit" id="transfer-submit-btn" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                        Confirm & Send Money
+                    </button>
+                </form>
+            </div>
+
+            <!-- Transaction History Ledger -->
+            <div class="card ledger-card">
+                <h3 class="section-title"><i class="fa-solid fa-list-check"></i> Audit Ledger / Transaction History</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Sender</th>
+                                <th>Recipient</th>
+                                <th>Description</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transaction-rows">
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                                    No records found in ledger.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toast-root"></div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentAuthMode = 'login';
+        let currentUsername = '';
+
+        // Check local storage for JWT token on startup
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('wallet_token');
+            const savedUser = localStorage.getItem('wallet_username');
+            if (token && savedUser) {
+                currentUsername = savedUser;
+                showDashboard();
+            }
+        });
+
+        function switchAuthTab(mode) {
+            currentAuthMode = mode;
+            document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+            document.getElementById('tab-register').classList.toggle('active', mode === 'register');
+            document.getElementById('auth-submit-btn').innerText = mode === 'login' ? 'Sign In' : 'Sign Up';
+        }
+
+        // Show Toast Notifications
+        function showToast(message, isError = false) {
+            const container = document.getElementById('toast-root');
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'toast-error' : ''}`;
+            toast.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i> ${message}`;
+            container.appendChild(toast);
+            
+            // Force reflow and show
+            setTimeout(() => toast.classList.add('show'), 50);
+            
+            // Dismiss
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // Authentication Submission Handler
+        async function handleAuthSubmit(event) {
+            event.preventDefault();
+            const usernameInput = document.getElementById('username').value.trim();
+            const passwordInput = document.getElementById('password').value;
+            const submitBtn = document.getElementById('auth-submit-btn');
+
+            const url = `${API_BASE}/auth/${currentAuthMode}`;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loader"></span> Processing...';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: usernameInput, password: passwordInput })
+                });
+
+                const data = await response.text();
+
+                if (!response.ok) {
+                    throw new Error(data || 'Request failed');
+                }
+
+                if (currentAuthMode === 'register') {
+                    showToast('Registration successful! Please login.');
+                    switchAuthTab('login');
+                    document.getElementById('password').value = '';
+                } else {
+                    // Login mode: expect JSON response containing token
+                    try {
+                        const json = JSON.parse(data);
+                        localStorage.setItem('wallet_token', json.token);
+                        localStorage.setItem('wallet_username', usernameInput);
+                        currentUsername = usernameInput;
+                        showToast('Welcome back! Login verified.');
+                        showDashboard();
+                    } catch (e) {
+                        throw new Error('Authentication parsed token signature error');
+                    }
+                }
+            } catch (err) {
+                showToast(err.message, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = currentAuthMode === 'login' ? 'Sign In' : 'Sign Up';
+            }
+        }
+
+        // Dashboard Display and Live Fetching
+        function showDashboard() {
+            document.getElementById('auth-panel').classList.add('hidden');
+            document.getElementById('dashboard-panel').classList.remove('hidden');
+            document.getElementById('header-user-display').classList.remove('hidden');
+            document.getElementById('logout-btn').classList.remove('hidden');
+            document.getElementById('current-user-name').innerText = currentUsername;
+            
+            // Fetch balance and transactions
+            fetchWalletData();
+        }
+
+        async function fetchWalletData() {
+            const token = localStorage.getItem('wallet_token');
+            if (!token) return;
+
+            try {
+                // Fetch Balance
+                const balanceRes = await fetch(`${API_BASE}/wallet/balance`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (balanceRes.status === 403 || balanceRes.status === 401) {
+                    logout();
+                    return;
+                }
+
+                const wallet = await balanceRes.json();
+                document.getElementById('balance-display').innerText = `$${parseFloat(wallet.balance).toFixed(2)}`;
+                document.getElementById('wallet-id-display').innerText = `#${wallet.id}`;
+
+                // Fetch Transactions
+                const txRes = await fetch(`${API_BASE}/wallet/transactions`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const txs = await txRes.json();
+                
+                renderTransactions(txs);
+            } catch (err) {
+                showToast('Failed to fetch real-time ledger data.', true);
+            }
+        }
+
+        function renderTransactions(txs) {
+            const tbody = document.getElementById('transaction-rows');
+            if (txs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No records found in ledger.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = txs.map(tx => {
+                const date = new Date(tx.timestamp).toLocaleString();
+                const isSent = tx.sourceWallet && tx.sourceWallet.user.username === currentUsername;
+                
+                const typeText = isSent ? 'Sent' : 'Received';
+                const typeClass = isSent ? 'badge-danger' : 'badge-success';
+                const amountClass = isSent ? 'tx-sent' : 'tx-received';
+                const amountSign = isSent ? '-' : '+';
+                
+                const senderName = tx.sourceWallet ? tx.sourceWallet.user.username : 'SYSTEM';
+                const recipientName = tx.targetWallet.user.username;
+
+                return `
+                    <tr>
+                        <td style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">${date}</td>
+                        <td>${senderName}</td>
+                        <td>${recipientName}</td>
+                        <td>${tx.description || 'Wallet Transfer'}</td>
+                        <td><span class="badge ${typeClass}">${typeText}</span></td>
+                        <td class="tx-amount ${amountClass}">${amountSign}$${parseFloat(tx.amount).toFixed(2)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Money Transfer Handler
+        async function handleTransferSubmit(event) {
+            event.preventDefault();
+            const targetUsername = document.getElementById('targetUsername').value.trim();
+            const amount = parseFloat(document.getElementById('transferAmount').value);
+            const description = document.getElementById('description').value.trim();
+            const token = localStorage.getItem('wallet_token');
+            const submitBtn = document.getElementById('transfer-submit-btn');
+
+            if (!token) return;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loader"></span> Sending...';
+
+            try {
+                const response = await fetch(`${API_BASE}/wallet/transfer`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ targetUsername, amount, description })
+                });
+
+                const msg = await response.text();
+
+                if (!response.ok) {
+                    throw new Error(msg || 'Transfer failed');
+                }
+
+                showToast(msg);
+                document.getElementById('transfer-form').reset();
+                fetchWalletData(); // Auto-refresh balance and transactions log!
+            } catch (err) {
+                showToast(err.message, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Confirm & Send Money';
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            document.getElementById('auth-panel').classList.remove('hidden');
+            document.getElementById('dashboard-panel').classList.add('hidden');
+            document.getElementById('header-user-display').classList.add('hidden');
+            document.getElementById('logout-btn').classList.add('hidden');
+            document.getElementById('auth-form').reset();
+            currentUsername = '';
+            showToast('Signed out successfully.');
+        }
+    </script>
+</body>
+</html>

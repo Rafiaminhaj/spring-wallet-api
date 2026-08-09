@@ -1,0 +1,23 @@
+meta {
+  name: TransferMoney
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/api/wallet/transfer
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: your_jwt_token_here
+}
+
+body:json {
+  {
+    "targetUsername": "bob",
+    "amount": 250.50,
+    "description": "Payment for dinner services"
+  }
+}

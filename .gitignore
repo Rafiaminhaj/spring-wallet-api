@@ -1,0 +1,25 @@
+# Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDEs
+.idea/
+*.iml
+.settings/
+.project
+.classpath
+.factorypath
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Logs and OS
+*.log
+.DS_Store
