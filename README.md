@@ -1,5 +1,7 @@
 # 💳 Spring-Wallet-API: Secured FinTech Ledger & Digital Wallet REST API
 
+![Spring Wallet API Banner](wallet_api_banner.png)
+
 Spring-Wallet-API is a high-performance, secure backend financial ledger service built with **Spring Boot 3.3**, **Java 21**, **Spring Security 6 (JWT)**, and **Spring Data JPA (H2 In-Memory Database)**. It provides secure user wallets, transactional balances, and ledger logs while implementing advanced concurrency controls to eliminate double-spending and database deadlocks.
 
 ---
